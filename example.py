@@ -1,5 +1,7 @@
 import random
 
+import sys, getopt
+
 from PIL import Image
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
@@ -48,16 +50,24 @@ def testing():
     with tf.Session() as sess: 
         new_saver.restore(sess, './model_w/data.ckpt')
                 
-        data = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(scipy.ndimage.imread("test_2.png", flatten=True)))
+        data = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(scipy.ndimage.imread("test_3.png", flatten=True)))
 
         
         op_to_restore = graph.get_tensor_by_name("y:0")
         print(sess.run(tf.argmax(op_to_restore,1), feed_dict = {"x:0" : [data]}))
 
     
-def main():
-    #training()
-    testing()
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv,"re",["training=","testing="])
+    except getopt.GetoptError:
+        print('example.py --training/--testing')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-r',"--training"):    
+            training()
+        elif opt in ("-e", "--esting"):
+            testing()
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
