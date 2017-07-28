@@ -1,2 +1,2 @@
-model_checkpoint_path: "/notebooks/mnist_prac/my_model.tflearn"
-all_model_checkpoint_paths: "/notebooks/mnist_prac/my_model.tflearn"
+model_checkpoint_path: "/notebooks/mnist_prac/1_convnet/my_model.tflearn"
+all_model_checkpoint_paths: "/notebooks/mnist_prac/1_convnet/my_model.tflearn"

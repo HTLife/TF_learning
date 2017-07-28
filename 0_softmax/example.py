@@ -50,7 +50,7 @@ def testing():
     with tf.Session() as sess: 
         new_saver.restore(sess, './model_w/data.ckpt')
                 
-        data = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(scipy.ndimage.imread("test_3.png", flatten=True)))
+        data = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(scipy.ndimage.imread("../testing3.png", flatten=True)))
 
         
         op_to_restore = graph.get_tensor_by_name("y:0")

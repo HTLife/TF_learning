@@ -31,15 +31,24 @@ model = tflearn.DNN(network, tensorboard_verbose=0, tensorboard_dir='/notebooks/
 # Load a model
 model.load('my_model.tflearn')
 
+import sys
 
-data = scipy.ndimage.imread("test_3.png", flatten=True)
+
+data = scipy.ndimage.imread(sys.argv[1], flatten=True)
+#data = scipy.ndimage.imread("../testing5.png", flatten=True)
 data = np.vectorize(lambda x: 255 - x)(np.reshape(data, (1,28,28,1)))
+data = data/255.  # image value is 0.0 ~ 1.0
 
+#predictions = np.array(model.predict(testX)).argmax(axis=1)
+#actual = testY.argmax(axis=1)
+#test_accuracy = np.mean(predictions == actual, axis=0)
+#print("Test accuracy: ", test_accuracy)
 
-        
-
-
-
+#predictions = np.array(model.predict(data)).argmax(axis=1)
+#print(predictions)       
 result = model.predict(data)
 print(result)
-print(np.argmax(result, 1))
+print('Predicted number = ' + str(np.argmax(result, 1)[0]))
+
+
+
