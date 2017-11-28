@@ -25,33 +25,44 @@ epochs = 12
 img_rows, img_cols = 28, 28
 input_shape = (img_rows, img_cols, 1)
 
-def genBatch_withPreprop_train(path='mnist.npz'):
+def genBatch_withPreprop_train(batch_size, path='mnist.npz'):
     ## train_or_test: 'train', 'test'
     path = keras.utils.get_file(path,
                     origin='https://s3.amazonaws.com/img-datasets/mnist.npz',
                     file_hash='8a61469f7ea1b51cbae51d4f78837e45')
     f = np.load(path)
     x_train_ori, y_train_ori = f['x_train'], f['y_train']
-    x_test_ori, y_test_ori = f['x_test'], f['y_test']
+    #x_test_ori, y_test_ori = f['x_test'], f['y_test']
     f.close()
     
-    index = 0   
-    for i in range(x_train_ori.shape[0]):
-        x_train = x_train_ori[i, :, :]
-        y_train = y_train_ori[i]
+    sample_per_batch = x_train_ori.shape[0] // batch_size
+    
+    start = 0
+    end = batch_size
+    endFlag = 0
+    while 1:
+        x_train_List = []
+        y_train_List = []
+        for i in range(start, end):
+            x_train = x_train_ori[i, :, :]
+            y_train = y_train_ori[i]
 
-        
-        x_train = x_train.reshape( img_rows, img_cols, 1)
-        input_shape = (img_rows, img_cols, 1)
-        
-        x_train = x_train.astype('float32')
-        x_train /= 255
-        x_train = np.expand_dims(x_train, axis=0)
-        
-        y_train = keras.utils.to_categorical(y_train, num_classes)
-        y_train = np.expand_dims(y_train, axis=0)
 
-        yield (x_train, y_train)
+            x_train = x_train.reshape( img_rows, img_cols, 1)
+            input_shape = (img_rows, img_cols, 1)
+
+            x_train = x_train.astype('float32')
+            x_train /= 255
+            x_train_List.append(x_train)
+            #x_train = np.expand_dims(x_train, axis=0)
+
+            y_train = keras.utils.to_categorical(y_train, num_classes)
+            y_train_List.append(y_train)
+            #y_train = np.expand_dims(y_train, axis=0)
+            
+        out_x_train = np.array(x_train_List)    
+        out_y_train = np.array(y_train_List)    
+        yield (out_x_train, out_y_train)
 
         
         
@@ -96,7 +107,7 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 
 
 
-model.fit_generator(generator = genBatch_withPreprop_train(),
+model.fit_generator(generator = genBatch_withPreprop_train(batch_size),
                     steps_per_epoch = 60000 // batch_size,
                     epochs = 12,
                     verbose=1)
