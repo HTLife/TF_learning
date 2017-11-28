@@ -59,10 +59,20 @@ def genBatch_withPreprop_train(batch_size, path='mnist.npz'):
             y_train = keras.utils.to_categorical(y_train, num_classes)
             y_train_List.append(y_train)
             #y_train = np.expand_dims(y_train, axis=0)
-            
+        
         out_x_train = np.array(x_train_List)    
         out_y_train = np.array(y_train_List)    
         yield (out_x_train, out_y_train)
+        if endFlag == 1:
+            start = 0
+            end = batch_size
+            endFlag = 0
+        else:
+            start += batch_size
+            end += batch_size
+        if end > x_train_ori.shape[0]:
+            end = x_train_ori.shape[0]
+            endFlag = 1
 
         
         
@@ -105,10 +115,13 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 #           verbose=1,
 #           validation_data=(x_test, y_test))
 
-
+sampleNum = 60000
+steps_per_epo = sampleNum // batch_size
+if sampleNum % batch_size != 0:
+    steps_per_epo += 1
 
 model.fit_generator(generator = genBatch_withPreprop_train(batch_size),
-                    steps_per_epoch = 60000 // batch_size,
+                    steps_per_epoch = steps_per_epo,
                     epochs = 12,
                     verbose=1)
                     #validation_data = genBatch_withPreprop_test,
